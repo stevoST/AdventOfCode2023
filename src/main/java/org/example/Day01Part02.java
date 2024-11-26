@@ -1,5 +1,7 @@
 package org.example;
 
+import java.util.*;
+
 public class Day01Part02 {
     public static void main(String[] args) {
         final String input = """
@@ -1004,29 +1006,155 @@ public class Day01Part02 {
                 dklhhhlpqqxlgdzzheightjntbmlfour4
                 ggrbl5cthnzlsbjssixpt""";
 
-        final String replacedWordOne = input.replaceAll("one", "1");
-        final String replacedWordTwo = replacedWordOne.replaceAll("two", "2");
-        final String replacedWordThree = replacedWordTwo.replaceAll("three", "3");
-        final String replacedWordFour = replacedWordThree.replaceAll("four", "4");
-        final String replacedWordFive = replacedWordFour.replaceAll("five", "5");
-        final String replacedWordSix = replacedWordFive.replaceAll("six", "6");
-        final String replacedWordSeven = replacedWordSix.replaceAll("seven", "7");
-        final String replacedWordEight = replacedWordSeven.replaceAll("eight", "8");
-        final String replacedWordNine = replacedWordEight.replaceAll("nine", "9");
+        final String testInput = """
+                two1nine
+                eightwothree
+                abcone2threexyz
+                xtwone3four
+                4nineeightseven2
+                zoneight234
+                7pqrstsixteen
+                """;
+        // right answer for testInput is 281
 
-        final String removedLetters = replacedWordNine.replaceAll("[a-zA-Z]", "");
-        final String[] numbers = removedLetters.split("\n");
+        final Map<String, String> numberMappings = new LinkedHashMap<>();
+        numberMappings.put("0", "0");
+        numberMappings.put("1", "1");
+        numberMappings.put("2", "2");
+        numberMappings.put("3", "3");
+        numberMappings.put("4", "4");
+        numberMappings.put("5", "5");
+        numberMappings.put("6", "6");
+        numberMappings.put("7", "7");
+        numberMappings.put("8", "8");
+        numberMappings.put("9", "9");
+        numberMappings.put("zero", "0");
+        numberMappings.put("one", "1");
+        numberMappings.put("two", "2");
+        numberMappings.put("three", "3");
+        numberMappings.put("four", "4");
+        numberMappings.put("five", "5");
+        numberMappings.put("six", "6");
+        numberMappings.put("seven", "7");
+        numberMappings.put("eight", "8");
+        numberMappings.put("nine", "9");
+        numberMappings.put("ten", "10");
+        numberMappings.put("eleven", "11");
+        numberMappings.put("twelve", "12");
+        numberMappings.put("thirteen", "13");
+        numberMappings.put("fourteen", "14");
+        numberMappings.put("fifteen", "15");
+        numberMappings.put("sixteen", "16");
+        numberMappings.put("seventeen", "17");
+        numberMappings.put("eighteen", "18");
+        numberMappings.put("nineteen", "19");
+        numberMappings.put("twenty", "20");
+        numberMappings.put("twentyone", "21");
+        numberMappings.put("twentytwo", "22");
+        numberMappings.put("twentythree", "23");
+        numberMappings.put("twentyfour", "24");
+        numberMappings.put("twentyfive", "25");
+        numberMappings.put("twentysix", "26");
+        numberMappings.put("twentyseven", "27");
+        numberMappings.put("twentyeight", "28");
+        numberMappings.put("twentynine", "29");
+        numberMappings.put("thirty", "30");
+        numberMappings.put("thirtyone", "31");
+        numberMappings.put("thirtytwo", "32");
+        numberMappings.put("thirtythree", "33");
+        numberMappings.put("thirtyfour", "34");
+        numberMappings.put("thirtyfive", "35");
+        numberMappings.put("thirtysix", "36");
+        numberMappings.put("thirtyseven", "37");
+        numberMappings.put("thirtyeight", "38");
+        numberMappings.put("thirtynine", "39");
+        numberMappings.put("forty", "40");
+        numberMappings.put("fortyone", "41");
+        numberMappings.put("fortytwo", "42");
+        numberMappings.put("fortythree", "43");
+        numberMappings.put("fortyfour", "44");
+        numberMappings.put("fortyfive", "45");
+        numberMappings.put("fortysix", "46");
+        numberMappings.put("fortyseven", "47");
+        numberMappings.put("fortyeight", "48");
+        numberMappings.put("fortynine", "49");
+        numberMappings.put("fifty", "50");
+        numberMappings.put("fiftyone", "51");
+        numberMappings.put("fiftytwo", "52");
+        numberMappings.put("fiftythree", "53");
+        numberMappings.put("fiftyfour", "54");
+        numberMappings.put("fiftyfive", "55");
+        numberMappings.put("fiftysix", "56");
+        numberMappings.put("fiftyseven", "57");
+        numberMappings.put("fiftyeight", "58");
+        numberMappings.put("fiftynine", "59");
+        numberMappings.put("sixty", "60");
+        numberMappings.put("sixtyone", "61");
+        numberMappings.put("sixtytwo", "62");
+        numberMappings.put("sixtythree", "63");
+        numberMappings.put("sixtyfour", "64");
+        numberMappings.put("sixtyfive", "65");
+        numberMappings.put("sixtysix", "66");
+        numberMappings.put("sixtyseven", "67");
+        numberMappings.put("sixtyeight", "68");
+        numberMappings.put("sixtynine", "69");
+        numberMappings.put("seventy", "70");
+        numberMappings.put("seventyone", "71");
+        numberMappings.put("seventytwo", "72");
+        numberMappings.put("seventythree", "73");
+        numberMappings.put("seventyfour", "74");
+        numberMappings.put("seventyfive", "75");
+        numberMappings.put("seventysix", "76");
+        numberMappings.put("seventyseven", "77");
+        numberMappings.put("seventyeight", "78");
+        numberMappings.put("seventynine", "79");
+        numberMappings.put("eighty", "80");
+        numberMappings.put("eightyone", "81");
+        numberMappings.put("eightytwo", "82");
+        numberMappings.put("eightythree", "83");
+        numberMappings.put("eightyfour", "84");
+        numberMappings.put("eightyfive", "85");
+        numberMappings.put("eightysix", "86");
+        numberMappings.put("eightyseven", "87");
+        numberMappings.put("eightyeight", "88");
+        numberMappings.put("eightynine", "89");
+        numberMappings.put("ninety", "90");
+        numberMappings.put("ninetyone", "91");
+        numberMappings.put("ninetytwo", "92");
+        numberMappings.put("ninetythree", "93");
+        numberMappings.put("ninetyfour", "94");
+        numberMappings.put("ninetyfive", "95");
+        numberMappings.put("ninetysix", "96");
+        numberMappings.put("ninetyseven", "97");
+        numberMappings.put("ninetyeight", "98");
+        numberMappings.put("ninetynine", "99");
+
+        final String[] numbers = input.split("\n");
         int finalValue = 0;
         for (String number : numbers) {
-            if (number.length() < 2) {
-                finalValue += (Integer.parseInt(number) * 11);
-            } else if (number.length() == 2){
-                finalValue += Integer.parseInt(number);
-            } else {
-                final char firstChar = number.charAt(0);
-                final char lastChar = number.charAt(number.length()-1);
-                finalValue += Integer.parseInt("" + firstChar + lastChar);
+            int lowestIndex = number.length();
+            int highestIndex = 0;
+            String firstValidNumber = "";
+            String lastValidNumber = "";
+
+            for (Map.Entry<String, String> entry : numberMappings.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                int firstIndex = number.indexOf(key);
+                int lastIndex = number.lastIndexOf(key);
+
+                if (firstIndex >= 0 && firstIndex <= lowestIndex) {
+                    lowestIndex = firstIndex;
+                    firstValidNumber = value.substring(0, 1);
+                }
+                if (lastIndex >= 0 && lastIndex >= highestIndex) {
+                    highestIndex = lastIndex;
+                    lastValidNumber = value.substring(value.length() - 1);
+                }
             }
+            System.out.println(number + " " + firstValidNumber + lastValidNumber);
+            finalValue += Integer.parseInt(firstValidNumber + lastValidNumber);
+
         }
         System.out.println(finalValue);
     }

@@ -1,14 +1,20 @@
 package org.example;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Day02Part01 {
     private static final Pattern PATTERN_FOR_GAME_ID = Pattern.compile("Game (\\d+):");
     private static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
-    private final static int MAX_RED_CUBES = 12;
-    private final static int MAX_GREEN_CUBES = 13;
-    private final static int MAX_BLUE_CUBES = 14;
+    private static final Map<String, Integer> MAX_CUBES = new HashMap<>();
+
+    static {
+        MAX_CUBES.put("red", 12);
+        MAX_CUBES.put("green", 13);
+        MAX_CUBES.put("blue", 14);
+    }
 
     public static void main(String[] args) {
         final String input = """
@@ -152,18 +158,9 @@ public class Day02Part01 {
             final String[] colors = cube.split(",");
             for (String color : colors) {
                 final int amountOfCubes = getNumberFromColor(color);
-                if (color.contains("red")) {
-                    if(amountOfCubes > MAX_RED_CUBES) {
-                        return false;
-                    }
-                } else if (color.contains("green")) {
-                    if(amountOfCubes > MAX_GREEN_CUBES) {
-                        return false;
-                    }
-                } else if (color.contains("blue")) {
-                    if(amountOfCubes > MAX_BLUE_CUBES) {
-                        return false;
-                    }
+                final String colorName = getColorName(color);
+                if (amountOfCubes > MAX_CUBES.get(colorName)) {
+                    return false;
                 }
             }
         }
@@ -171,18 +168,30 @@ public class Day02Part01 {
         return true;
     }
 
-    private static int getGameId(String game) {
+    private static String getColorName(final String color) {
+        if (color.contains("red")) {
+            return "red";
+        } else if (color.contains("green")) {
+            return "green";
+        } else if (color.contains("blue")) {
+            return "blue";
+        } else {
+            throw new IllegalArgumentException("Unknown color: " + color);
+        }
+    }
+
+    private static int getGameId(final String game) {
         Matcher matcher = PATTERN_FOR_GAME_ID.matcher(game);
 
         if (matcher.find()) {
             String gameId = matcher.group(1);
-            return  Integer.parseInt(gameId);
+            return Integer.parseInt(gameId);
         } else {
             throw new IllegalArgumentException("Game id not found");
         }
     }
 
-    public static int getNumberFromColor(String color) {
+    public static int getNumberFromColor(final String color) {
         Matcher matcher = NUMBER_PATTERN.matcher(color);
         if (matcher.find()) {
             return Integer.parseInt(matcher.group());

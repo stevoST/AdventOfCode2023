@@ -1,8 +1,10 @@
 package org.example;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Day02Part02 {
     private static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
@@ -139,25 +141,24 @@ public class Day02Part02 {
         final String[] parts = game.split(":");
         final String[] cubes = parts[1].split(";");
 
-        int minimumRedCubesRequired = 0;
-        int minimumGreenCubesRequired = 0;
-        int minimumBlueCubesRequired = 0;
+        final Map<String, Integer> maxCubes = Arrays.stream(cubes)
+                .flatMap(cube -> Arrays.stream(cube.split(",")))
+                .collect(Collectors.toMap(
+                        Day02Part02::getColor,
+                        Day02Part02::getNumberFromColor,
+                        Math::max
+                ));
 
-        for (String cube : cubes) {
-            final String[] colors = cube.split(",");
-            for (String color : colors) {
-                final int amountOfCubes = getNumberFromColor(color);
-                if(color.contains(RED)){
-                    minimumRedCubesRequired = Math.max(amountOfCubes, minimumRedCubesRequired);
-                } else if (color.contains(GREEN)) {
-                    minimumGreenCubesRequired = Math.max(amountOfCubes, minimumGreenCubesRequired);
-                } else if(color.contains(BLUE)){
-                    minimumBlueCubesRequired = Math.max(amountOfCubes, minimumBlueCubesRequired);
-                }
-            }
-        }
+        return maxCubes.getOrDefault(RED, 0) *
+                maxCubes.getOrDefault(GREEN, 0) *
+                maxCubes.getOrDefault(BLUE, 0);
+    }
 
-        return minimumRedCubesRequired * minimumGreenCubesRequired * minimumBlueCubesRequired;
+    private static String getColor(String colorString) {
+        if (colorString.contains(RED)) return RED;
+        if (colorString.contains(GREEN)) return GREEN;
+        if (colorString.contains(BLUE)) return BLUE;
+        throw new IllegalArgumentException("Unknown color in the string");
     }
 
     public static int getNumberFromColor(final String color) {

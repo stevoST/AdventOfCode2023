@@ -5,6 +5,9 @@ import java.util.regex.Pattern;
 
 public class Day03Part01 {
 
+    final static String SYMBOL_REGEX = ".*[^.\\d].*";
+    final static Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
+
     public static void main(String[] args) {
         final String input = """
                 .....180.........230..........................218.....189......415.......................322....507..................206..............111...
@@ -167,42 +170,43 @@ public class Day03Part01 {
 
         //sum is 4361
 
-
         final String[] rows = input.split("\n");
-
         int sum = 0;
 
-        for (int i = 0; i < rows.length; i++) {
-            Pattern pattern = Pattern.compile("\\d+");
-            Matcher matcher = pattern.matcher(rows[i]);
+        for (int rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+            Matcher matcher = NUMBER_PATTERN.matcher(rows[rowIndex]);
 
             while (matcher.find()) {
-                if (isAdjacentSymbolToNumberPresent(rows, i, matcher.start(), matcher.end())) {
+                if (isAdjacentSymbolToNumberPresent(rows, rowIndex, matcher.start(), matcher.end())) {
                     sum += Integer.parseInt(matcher.group());
                 }
                 System.out.println("Found number: " + matcher.group() + " at index: " + matcher.start() + " to " + matcher.end());
             }
         }
-
         System.out.println("Sum: " + sum);
-
     }
 
     private static boolean isAdjacentSymbolToNumberPresent(final String[] row, final int currentRow,
                                                            final int start, final int end) {
-        boolean isCharacterPresent = false;
         int startIndex = start > 0 ? start - 1 : start;
         int endIndex = end < row[currentRow].length() - 1 ? end + 1 : end;
-        if (currentRow > 0) {
-            isCharacterPresent |= row[currentRow - 1].substring(startIndex, endIndex).matches(".*[^.\\d].*");
-        }
-        if (currentRow < row.length - 1) {
-            isCharacterPresent |= row[currentRow + 1].substring(startIndex, endIndex).matches(".*[^.\\d].*");
-        }
-        isCharacterPresent |= row[currentRow].substring(startIndex, endIndex).matches(".*[^.\\d].*");
-        System.out.println("isCharacterPresent: " + isCharacterPresent);
-        return isCharacterPresent;
+        return  (isAdjacentSymbolOnPreviousLine(row, currentRow, startIndex, endIndex)) ||
+                (isAdjacentSymbolonNextLine(row, currentRow, startIndex, endIndex)) ||
+                isAdjacentSymbolOnCurrentline(startIndex, endIndex, row[currentRow]);
     }
 
+    private static boolean isAdjacentSymbolOnCurrentline(int startIndex, int endIndex, String row) {
+        return row.substring(startIndex, endIndex).matches(SYMBOL_REGEX);
+    }
+
+    private static boolean isAdjacentSymbolOnPreviousLine(final String[] row, final int currentRow,
+                                                          final int startIndex, final int endIndex) {
+        return currentRow > 0 && row[currentRow - 1].substring(startIndex, endIndex).matches(SYMBOL_REGEX);
+    }
+
+    private static boolean isAdjacentSymbolonNextLine(final String[] row, final int currentRow,
+                                                      final int startIndex, final int endIndex) {
+        return currentRow < row.length - 1 && row[currentRow + 1].substring(startIndex, endIndex).matches(SYMBOL_REGEX);
+    }
 
 }

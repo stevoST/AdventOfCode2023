@@ -1,6 +1,8 @@
 package org.example;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -206,6 +208,8 @@ public class Day04Part01 {
                 Card 193: 53 40  5 39 13 12 27 57 68 45 | 67 10 87 64 22  6 77 17 20 24 78 52 19 18 99 88 66 31 65 47 11 61 90  9 92
                 """;
 
+        // score is 15268 for input
+
 
         final String testInput = """
                 Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
@@ -222,32 +226,45 @@ public class Day04Part01 {
         final Pattern pattern = Pattern.compile(":(.*?)\\|");
         final Pattern pattern2 = Pattern.compile("\\|(.*)");
 
-        int sumOfWinningNumbersFromAllGames = 0;
+        int sumOfWinningNumbersFromAllGames = Arrays.stream(inputArray)
+                .map(line -> processGame(line, pattern, pattern2))
+                .reduce(0, Integer::sum);
 
-        for (String line : inputArray) {
-            Matcher matcher = pattern.matcher(line);
-            Matcher matcher2 = pattern2.matcher(line);
-
-            if (matcher.find() && matcher2.find()) {
-                final String[] numbersPicked = matcher.group(1).trim().split("\\s+");
-                System.out.println("Numbers Picked: " + Arrays.toString(numbersPicked));
-
-                final String[] winningNumbers = matcher2.group(1).trim().split("\\s+");
-                final Set<Integer> winningNumbersSet = Arrays.stream(winningNumbers)
-                        .map(Integer::parseInt)
-                        .collect(Collectors.toSet());
-                System.out.println("Winning numbers: " + Arrays.toString(winningNumbers));
-
-                sumOfWinningNumbersFromAllGames += Arrays.stream(numbersPicked)
-                        .map(Integer::parseInt)
-                        .filter(winningNumbersSet::contains)
-                        .reduce(0, (left, right) -> left == 0 ? 1 : left * 2);
-            } else {
-                System.out.println("No match found");
-            }
-            System.out.println("-------------------------------------------------");
-        }
         System.out.println("Sum of winning numbers from all games: " + sumOfWinningNumbersFromAllGames);
+    }
+
+    private static int processGame(final String line, final Pattern pattern,
+                                   final Pattern pattern2) {
+
+            final Set<Integer> numbersPicked = excractNumbers(line, pattern);
+            System.out.println("Numbers Picked: " + numbersPicked);
+
+            final Set<Integer> winningNumbers = excractNumbers(line, pattern2);
+            System.out.println("Winning numbers: " + winningNumbers);
+
+        System.out.println("-------------------------------------------------");
+        return scoreForOneLine(numbersPicked, winningNumbers);
+    }
+
+    private static int scoreForOneLine(final Set<Integer> numbersPicked, final Set<Integer> winningNumbers) {
+        final Set<Integer> intersection = new HashSet<>(numbersPicked);
+        intersection.retainAll(winningNumbers);
+        System.out.println("Intersection: " + intersection);
+        return intersection.stream()
+                .mapToInt(Integer::intValue)
+                .reduce(0, (left, right) -> left == 0 ? 1 : left * 2);
+    }
+
+    private static Set<Integer> excractNumbers(final String line, final Pattern pattern) {
+        final Matcher matcher = pattern.matcher(line);
+
+        if (matcher.find()) {
+            final String[] numbers = matcher.group(1).trim().split("\\s+");
+            return Arrays.stream(numbers)
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
     }
 
 
